@@ -20,7 +20,10 @@ class LoginPage extends StatefulWidget with HasPresenter<LoginPresenter> {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with PresenterStateMixin<LoginViewModel, LoginPresenter, LoginPage> {
+class _LoginPageState extends State<LoginPage>
+    with PresenterStateMixin<LoginViewModel, LoginPresenter, LoginPage> {
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Padding(
@@ -29,28 +32,32 @@ class _LoginPageState extends State<LoginPage> with PresenterStateMixin<LoginVie
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
+                controller: userNameController,
                 decoration: InputDecoration(
                   hintText: appLocalizations.usernameHint,
                 ),
-                onChanged: (text) => doNothing(), //TODO
+                onChanged: presenter.onUserNameChanged,
               ),
               const SizedBox(height: 8),
               TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: appLocalizations.passwordHint,
                 ),
-                onChanged: (text) => doNothing(), //TODO
+                onChanged: presenter.onPasswordChanged,
               ),
               const SizedBox(height: 16),
               stateObserver(
-                builder: (context, state) => ElevatedButton(
-                  onPressed: () => doNothing(), //TODO
-                  child: Text(appLocalizations.logInAction),
-                ),
+                builder: (context, state) => state.isLoginLoading ? const CircularProgressIndicator() : ElevatedButton(
+                    onPressed: state.isLoginEnabled ? () => presenter.onLoginClicked(userNameController.text, passwordController.text) : null,
+                    child: Text(appLocalizations.logInAction),
+                  ),
               ),
             ],
           ),
         ),
       );
+
+  
 }
